@@ -3,15 +3,16 @@ package main
 import (
 	"math/rand"
 	"time"
+
 	"github.com/nsf/termbox-go"
 )
 
 const (
-	backgroundColor = termbox.ColorBlack
-	cellColor = termbox.ColorGreen
-	drawInterval = 100 * time.Millisecond
-	cellWidth = 2
-	size int = 32
+	backgroundColor     = termbox.ColorBlack
+	cellColor           = termbox.ColorGreen
+	drawInterval        = 100 * time.Millisecond
+	cellWidth           = 2
+	size            int = 32
 )
 
 var (
@@ -19,7 +20,7 @@ var (
 	pause = true
 )
 
-func Reset(cells *[size][size]bool) {
+func reset(cells *[size][size]bool) {
 	//MapCells(cells, fReset)
 	for row := 0; row < len(cells); row++ {
 		for col := 0; col < len(cells[row]); col++ {
@@ -28,10 +29,10 @@ func Reset(cells *[size][size]bool) {
 	}
 }
 
-func Next(cells *[size][size]bool) (newCells [size][size]bool) {
+func next(cells *[size][size]bool) (newCells [size][size]bool) {
 	for row := 0; row < len(cells); row++ {
 		for col := 0; col < len(cells[row]); col++ {
-			c := CountIfAlive(cells, row, col)
+			c := countIfAlive(cells, row, col)
 			if c == 3 {
 				newCells[row][col] = true
 			} else if c == 2 {
@@ -44,42 +45,42 @@ func Next(cells *[size][size]bool) (newCells [size][size]bool) {
 	return
 }
 
-func CountIfAlive(cells *[size][size]bool, row, col int) (count int) {
+func countIfAlive(cells *[size][size]bool, row, col int) (count int) {
 	if row > 0 {
-		if col > 0 && cells[row - 1][col - 1] {
+		if col > 0 && cells[row-1][col-1] {
 			count++
 		}
-		if cells[row - 1][col] {
+		if cells[row-1][col] {
 			count++
 		}
-		if col < size - 1 && cells[row - 1][col + 1] {
+		if col < size-1 && cells[row-1][col+1] {
 			count++
 		}
 	}
-	if col > 0 && cells[row][col - 1] {
+	if col > 0 && cells[row][col-1] {
 		count++
 	}
 	if cells[row][col] {
 		count++
 	}
-	if col < size - 1 && cells[row][col + 1] {
+	if col < size-1 && cells[row][col+1] {
 		count++
 	}
-	if row < size - 1 {
-		if col > 0 && cells[row + 1][col - 1] {
+	if row < size-1 {
+		if col > 0 && cells[row+1][col-1] {
 			count++
 		}
-		if cells[row + 1][col] {
+		if cells[row+1][col] {
 			count++
 		}
-		if col < size - 1 && cells[row + 1][col + 1] {
+		if col < size-1 && cells[row+1][col+1] {
 			count++
 		}
 	}
 	return
 }
 
-func Draw(cells *[size][size]bool) {
+func draw(cells *[size][size]bool) {
 	termbox.Clear(backgroundColor, backgroundColor)
 	for row := 0; row < len(cells); row++ {
 		for col := 0; col < len(cells[row]); col++ {
@@ -88,7 +89,7 @@ func Draw(cells *[size][size]bool) {
 				color = cellColor
 			}
 			for i := 0; i < cellWidth; i++ {
-				termbox.SetCell(col * cellWidth + i, row, ' ', color, color)
+				termbox.SetCell(col*cellWidth+i, row, ' ', color, color)
 			}
 		}
 	}
@@ -110,10 +111,10 @@ func main() {
 		}
 	}()
 
-	Reset(&cells)
-	Draw(&cells)
+	reset(&cells)
+	draw(&cells)
 
-	loop:
+loop:
 	for {
 		select {
 		case event := <-eventQueue:
@@ -124,15 +125,15 @@ func main() {
 					pause = !pause
 				} else if event.Key == termbox.KeyCtrlR {
 					pause = true
-					Reset(&cells)
-					Draw(&cells)
+					reset(&cells)
+					draw(&cells)
 				}
 			}
 		default:
 			if !pause {
 				termbox.Clear(backgroundColor, backgroundColor)
-				cells = Next(&cells)
-				Draw(&cells)
+				cells = next(&cells)
+				draw(&cells)
 			}
 		}
 		time.Sleep(drawInterval)
