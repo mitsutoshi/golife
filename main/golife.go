@@ -8,20 +8,22 @@ import (
 )
 
 const (
-	backgroundColor     = termbox.ColorBlack
-	cellColor           = termbox.ColorGreen
-	drawInterval        = 100 * time.Millisecond
-	cellWidth           = 2
-	size            int = 32
+	backgroundColor = termbox.ColorBlack
+	cellColor       = termbox.ColorGreen
+	textColor       = termbox.ColorWhite
+	cellWidth       = 2
+	size            = 32
+	marginTop       = 2
+	marginLeft      = 4
 )
 
 var (
-	cells = [size][size]bool{}
-	pause = true
+	cells        = [size][size]bool{}
+	pause        = true
+	drawInterval = 100 * time.Millisecond
 )
 
-func reset(cells *[size][size]bool) {
-	//MapCells(cells, fReset)
+func reset() {
 	for row := 0; row < len(cells); row++ {
 		for col := 0; col < len(cells[row]); col++ {
 			cells[row][col] = rand.Intn(10) < 4
@@ -29,10 +31,11 @@ func reset(cells *[size][size]bool) {
 	}
 }
 
-func next(cells *[size][size]bool) (newCells [size][size]bool) {
-	for row := 0; row < len(cells); row++ {
-		for col := 0; col < len(cells[row]); col++ {
-			c := countIfAlive(cells, row, col)
+func next() {
+	newCells := [size][size]bool{}
+	for row := 0; row < size; row++ {
+		for col := 0; col < size; col++ {
+			c := countIfAlive(row, col)
 			if c == 3 {
 				newCells[row][col] = true
 			} else if c == 2 {
@@ -42,10 +45,10 @@ func next(cells *[size][size]bool) (newCells [size][size]bool) {
 			}
 		}
 	}
-	return
+	cells = newCells
 }
 
-func countIfAlive(cells *[size][size]bool, row, col int) (count int) {
+func countIfAlive(row, col int) (count int) {
 	if row > 0 {
 		if col > 0 && cells[row-1][col-1] {
 			count++
@@ -58,9 +61,6 @@ func countIfAlive(cells *[size][size]bool, row, col int) (count int) {
 		}
 	}
 	if col > 0 && cells[row][col-1] {
-		count++
-	}
-	if cells[row][col] {
 		count++
 	}
 	if col < size-1 && cells[row][col+1] {
@@ -80,8 +80,7 @@ func countIfAlive(cells *[size][size]bool, row, col int) (count int) {
 	return
 }
 
-func draw(cells *[size][size]bool) {
-	termbox.Clear(backgroundColor, backgroundColor)
+func draw() {
 	for row := 0; row < len(cells); row++ {
 		for col := 0; col < len(cells[row]); col++ {
 			color := backgroundColor
@@ -89,11 +88,39 @@ func draw(cells *[size][size]bool) {
 				color = cellColor
 			}
 			for i := 0; i < cellWidth; i++ {
-				termbox.SetCell(col*cellWidth+i, row, ' ', color, color)
+				termbox.SetCell(marginLeft+col*cellWidth+i, marginTop+row, ' ', color, color)
 			}
 		}
 	}
-	termbox.Flush()
+}
+
+func drawText(x, y int, text string) {
+	for _, c := range text {
+		termbox.SetCell(size+4+x, y, c, textColor, backgroundColor)
+		x++
+	}
+}
+
+func drawKeyOperationsText() {
+	y := marginTop
+	drawText(size+8, y, "+----------+----------------+")
+	y++
+	drawText(size+8, y, "| Key      | Function       |")
+	y++
+	drawText(size+8, y, "+----------+----------------+")
+	y++
+	drawText(size+8, y, "| Space    | Run or Pause   |")
+	y++
+	drawText(size+8, y, "| Ctrl + R | Reset cells    |")
+	y++
+	drawText(size+8, y, "| Ctrl + U | Speed up       |")
+	y++
+	drawText(size+8, y, "| Ctrl + D | Speed down     |")
+	y++
+	drawText(size+8, y, "| Escape   | Exit           |")
+	y++
+	drawText(size+8, y, "+----------+----------------+")
+	y++
 }
 
 func main() {
@@ -111,8 +138,11 @@ func main() {
 		}
 	}()
 
-	reset(&cells)
-	draw(&cells)
+	termbox.Clear(backgroundColor, backgroundColor)
+	reset()
+	draw()
+	drawKeyOperationsText()
+	termbox.Flush()
 
 loop:
 	for {
@@ -125,17 +155,25 @@ loop:
 					pause = !pause
 				} else if event.Key == termbox.KeyCtrlR {
 					pause = true
-					reset(&cells)
-					draw(&cells)
+					reset()
+					draw()
+				} else if event.Key == termbox.KeyCtrlD {
+					drawInterval += 50 * time.Millisecond
+				} else if event.Key == termbox.KeyCtrlU {
+					if drawInterval > 50*time.Millisecond {
+						drawInterval -= 50 * time.Millisecond
+					}
 				}
 			}
 		default:
 			if !pause {
 				termbox.Clear(backgroundColor, backgroundColor)
-				cells = next(&cells)
-				draw(&cells)
+				next()
+				draw()
+				drawKeyOperationsText()
 			}
 		}
+		termbox.Flush()
 		time.Sleep(drawInterval)
 	}
 }
