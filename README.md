@@ -1,6 +1,8 @@
 # golife
 Conway's Game of Life created in golang.
 
+It can run on the terminal.
+
 ![Sample image](https://github.com/mitsutoshi/wiki/raw/master/golife_demo.png)
 
 ## Key Operations
