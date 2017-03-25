@@ -3,7 +3,7 @@ Conway's Game of Life created in golang.
 
 It can run on the terminal.
 
-![Sample image](https://github.com/mitsutoshi/wiki/raw/master/golife_demo.png)
+<img src="https://github.com/mitsutoshi/wiki/raw/master/golife_demo.png" width="480px">
 
 ## Key Operations
 
