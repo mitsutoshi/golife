@@ -1,14 +1,21 @@
 # golife
+
 Conway's Game of Life created in golang.
 
 It can run on the terminal.
 
 <img src="./demo.png" width="480px">
 
-## Key Operations
+## Control
 
 * **Space**: Stop or Start.
 * **Ctrl + R**: Reset cells
-* **Ctrl + U**: Speed up
-* **Ctrl + D**: Speed down
+* **->**: Speed up
+* **<-**: Speed down
 * **Esc**: Exit
+
+## Pattern
+
+* **Shift + A**: Glider
+* **Shift + B**: Glider Gun
+* **Shift + C**: Galaxy
