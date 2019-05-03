@@ -6,7 +6,21 @@ It can run on the terminal.
 
 <img src="./demo.png" width="480px">
 
-## Control
+## Install
+
+Execute `go get` this repository.
+
+## Usage
+
+1. Open terminal app.
+
+2. Run binary file.
+
+    ```bash
+    $ golife
+    ```
+
+### Control
 
 * **Space**: Stop or Start.
 * **Ctrl + R**: Reset cells
@@ -14,8 +28,9 @@ It can run on the terminal.
 * **<-**: Speed down
 * **Esc**: Exit
 
-## Pattern
+### Pattern
 
 * **Shift + A**: Glider
 * **Shift + B**: Glider Gun
 * **Shift + C**: Galaxy
+
