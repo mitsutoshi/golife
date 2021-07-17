@@ -1,6 +1,6 @@
 # golife
 
-Conway's Game of Life created in golang.
+This is Conway's Game of Life written in golang.
 
 It can run on the terminal.
 
